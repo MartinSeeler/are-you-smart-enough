@@ -1,40 +1,94 @@
-import React from "react";
+"use client";
 
-const notificationMethods = [
-  { id: "email", title: "Email" },
-  { id: "sms", title: "Phone (SMS)" },
-  { id: "push", title: "Push notification" },
-];
+import { experimental_useObject as useObject } from "ai/react";
+import { Evaluation, evaluationSchema } from "@/app/api/eval/schema";
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import QuestionFooter from "./question-footer";
 
-const QuestionMultipleChoice = () => {
+export type QuestionMultipleChoiceProps = {
+  question: string;
+  options: string[];
+  referenceAnswer: string;
+  onEvaluateComplete: (
+    ev: Evaluation,
+    question: string,
+    answer: string
+  ) => void;
+  onNextQuestion: () => void;
+  onShowResults: () => void;
+  hasNextQuestion: boolean;
+};
+
+const QuestionMultipleChoice = ({
+  question,
+  options,
+  referenceAnswer,
+  onEvaluateComplete,
+  onNextQuestion,
+  onShowResults,
+  hasNextQuestion,
+}: QuestionMultipleChoiceProps) => {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const { object, submit } = useObject({
+    api: "/api/eval",
+    schema: evaluationSchema,
+    onError: (error) => {
+      console.error("Error", error);
+      setIsEvaluating(false);
+    },
+    onFinish: (object) => {
+      setIsEvaluating(false);
+      onEvaluateComplete(
+        object.object as Evaluation,
+        question,
+        selectedOption ?? ""
+      );
+    },
+  });
   return (
-    <fieldset>
-      <legend className="text-sm/6 font-semibold text-gray-900">
-        Notifications
-      </legend>
-      <p className="mt-1 text-sm/6 text-gray-600">
-        How do you prefer to receive notifications?
-      </p>
-      <div className="mt-6 space-y-6">
-        {notificationMethods.map((notificationMethod) => (
-          <div key={notificationMethod.id} className="flex items-center">
-            <input
-              defaultChecked={notificationMethod.id === "email"}
-              id={notificationMethod.id}
-              name="notification-method"
-              type="radio"
-              className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden not-checked:before:hidden"
-            />
-            <label
-              htmlFor={notificationMethod.id}
-              className="ml-3 block text-sm/6 font-medium text-gray-900"
-            >
-              {notificationMethod.title}
-            </label>
-          </div>
-        ))}
+    <>
+      <main>
+        <RadioGroup defaultValue="option-one">
+          {options.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={option}
+                id={`option-${option}`}
+                disabled={isSubmitted}
+                checked={selectedOption === option}
+                onClick={() => setSelectedOption(option)}
+                onChange={() => setSelectedOption(option)}
+              />
+              <Label htmlFor={`option-${option}`}>{option}</Label>
+            </div>
+          ))}
+        </RadioGroup>
+      </main>
+      <QuestionFooter
+        isDisabled={isEvaluating}
+        hasAnswered={isSubmitted}
+        hasNextQuestion={hasNextQuestion}
+        onNextQuestion={onNextQuestion}
+        onShowResults={onShowResults}
+        onSubmit={() => {
+          setIsEvaluating(true);
+          setIsSubmitted(true);
+          submit({
+            question: question + " Optionen: " + options.join(", ") + "?",
+            answer: selectedOption ?? "",
+            referenceAnswer,
+          });
+        }}
+      />
+      <div>
+        <p>{object?.score?.toFixed(2)}</p>
+        <p>{object?.feedback}</p>
       </div>
-    </fieldset>
+    </>
   );
 };
 
