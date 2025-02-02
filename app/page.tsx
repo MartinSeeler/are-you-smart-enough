@@ -1,7 +1,6 @@
 "use client";
 
-import { experimental_useObject as useObject } from "ai/react";
-import { Evaluation, evaluationSchema } from "./api/eval/schema";
+import { Evaluation } from "./api/eval/schema";
 import { useState } from "react";
 import QuestionText from "@/components/question-text";
 
