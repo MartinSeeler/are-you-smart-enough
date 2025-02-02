@@ -1,16 +1,14 @@
 import { z } from "zod";
 
-// define a schema for the notifications
-export const notificationSchema = z.object({
-  notifications: z.array(
-    z.object({
-      name: z.string().describe("Name of a fictional person."),
-      message: z.string().describe("Message. Do not use emojis or links."),
-    })
-  ),
+export const evaluationSchema = z.object({
+  score: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe(
+      "Score for the answer. Between 0 (completely wrong) and 100 (perfect)."
+    ),
+  feedback: z.string().describe("Favorable Feedback for the student."),
 });
 
-export const evaluationSchema = z.object({
-  score: z.number().min(0).max(100).describe("Score between 0 and 100"),
-  feedback: z.string().optional().describe("Feedback on the evaluation."),
-});
+export type Evaluation = z.infer<typeof evaluationSchema>;
