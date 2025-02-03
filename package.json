@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",
+    "@kinde-oss/kinde-auth-nextjs": "^2.4.6",
     "@opentelemetry/api-logs": "^0.57.1",
     "@opentelemetry/instrumentation": "^0.57.1",
     "@opentelemetry/sdk-logs": "^0.57.1",
