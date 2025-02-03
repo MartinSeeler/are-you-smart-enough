@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import QuestionFooter from "./question-footer";
+import ScoreChart from "./score-chart";
+import { Separator } from "./ui/separator";
 
 export type QuestionMultipleChoiceProps = {
   question: string;
@@ -68,8 +70,18 @@ const QuestionMultipleChoice = ({
           ))}
         </RadioGroup>
       </main>
+      {isSubmitted && (
+        <>
+          <Separator />
+          <div className="flex flex-col sm:flex-row gap-6 items-center">
+            <ScoreChart score={object?.score ?? 0} />
+            <p>{object?.feedback}</p>
+          </div>
+          <Separator />
+        </>
+      )}
       <QuestionFooter
-        isDisabled={isEvaluating}
+        isDisabled={isEvaluating || selectedOption === null}
         hasAnswered={isSubmitted}
         hasNextQuestion={hasNextQuestion}
         onNextQuestion={onNextQuestion}
@@ -84,10 +96,6 @@ const QuestionMultipleChoice = ({
           });
         }}
       />
-      <div>
-        <p>{object?.score?.toFixed(2)}</p>
-        <p>{object?.feedback}</p>
-      </div>
     </>
   );
 };

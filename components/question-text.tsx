@@ -5,6 +5,8 @@ import { Evaluation, evaluationSchema } from "@/app/api/eval/schema";
 import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import QuestionFooter from "./question-footer";
+import ScoreChart from "./score-chart";
+import { Separator } from "./ui/separator";
 
 export type QuestionTextProps = {
   question: string;
@@ -55,8 +57,18 @@ const QuestionText = ({
           onChange={(e) => setText(e.target.value)}
         />
       </main>
+      {isSubmitted && (
+        <>
+          <Separator />
+          <div className="flex flex-col sm:flex-row gap-6 items-center">
+            <ScoreChart score={object?.score ?? 0} />
+            <p>{object?.feedback}</p>
+          </div>
+          <Separator />
+        </>
+      )}
       <QuestionFooter
-        isDisabled={isEvaluating}
+        isDisabled={isEvaluating || text.trim().length === 0}
         hasAnswered={isSubmitted}
         hasNextQuestion={hasNextQuestion}
         onNextQuestion={onNextQuestion}
@@ -71,10 +83,6 @@ const QuestionText = ({
           });
         }}
       />
-      <div>
-        <p>{object?.score?.toFixed(2)}</p>
-        <p>{object?.feedback}</p>
-      </div>
     </>
   );
 };

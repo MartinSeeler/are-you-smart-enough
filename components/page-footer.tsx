@@ -5,7 +5,7 @@ export function PageFooter() {
   return (
     <footer className="w-full py-6">
       <div className="container mx-auto px-4">
-        <p className="text-center text-lg font-medium">
+        <p className="text-center">
           Entwickelt mit{" "}
           <Heart className="inline-block w-5 h-5 mx-1 text-red-400 animate-pulse" />{" "}
           von{" "}
