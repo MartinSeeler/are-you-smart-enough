@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { evaluationSchema } from "./schema";
 
-// Allow streaming responses up to 30 seconds
+// Allow streaming responses up to 60 seconds
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
@@ -10,6 +10,14 @@ export async function POST(req: Request) {
 
   const result = streamObject({
     model: openai("gpt-4o"),
+    experimental_telemetry: {
+      isEnabled: true,
+      functionId: "eval-answer",
+      metadata: {
+        question: context.question,
+        answer: context.answer,
+      },
+    },
     temperature: 0,
     schema: evaluationSchema,
     prompt: `Du bist ein Experte im Bewerten von Gymnasiumsantworten.
