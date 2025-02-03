@@ -1,12 +1,19 @@
 import { openai } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { evaluationSchema } from "./schema";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 // Allow streaming responses up to 60 seconds
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const context = await req.json();
+  const { getUser } = getKindeServerSession();
+
+  const user = await getUser();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
 
   const result = streamObject({
     model: openai("gpt-4o"),
@@ -16,12 +23,16 @@ export async function POST(req: Request) {
       metadata: {
         question: context.question,
         answer: context.answer,
+        userId: user.id,
       },
     },
     temperature: 0,
     schema: evaluationSchema,
     prompt: `Du bist ein Experte im Bewerten von Gymnasiumsantworten.
-Deine Aufgabe ist es (gutmütig) zu beurteilen, ob ein Schüler ein Thema verstanden hat. Dabei gilt:
+Deine Aufgabe ist es (gutmütig) zu beurteilen, ob ein Schüler ein Thema verstanden hat.
+Du bewertest die Antworten von ${user.given_name}.
+
+Dabei gilt:
 
 Kernaussage:
 - Prüfe, ob die wesentliche Idee korrekt wiedergegeben wurde – auch wenn Details fehlen.
