@@ -2,15 +2,19 @@ import { openai } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { evaluationSchema } from "./schema";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { hashJti } from "@/lib/utils";
 
 // Allow streaming responses up to 60 seconds
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const context = await req.json();
-  const { getUser } = getKindeServerSession();
+  const { getUser, getAccessToken } = getKindeServerSession();
+
+  const tokenData = await getAccessToken();
 
   const user = await getUser();
+
   if (!user) {
     throw new Error("User not authenticated");
   }
@@ -24,6 +28,7 @@ export async function POST(req: Request) {
         question: context.question,
         answer: context.answer,
         userId: user.id,
+        sessionId: hashJti(tokenData?.jti ?? ""),
       },
     },
     temperature: 0,
