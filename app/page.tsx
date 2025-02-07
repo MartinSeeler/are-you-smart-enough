@@ -4,6 +4,7 @@ import { useState } from "react";
 import CatalogHeader from "@/components/catalog-header";
 import Question from "@/components/question";
 import { EvaluationHistoryEntry, QuestionCatalog } from "@/lib/types";
+import Results from "@/components/results";
 
 const questionCatalogs: QuestionCatalog[] = [
   {
@@ -86,31 +87,52 @@ export default function Page() {
   const questions = catalog.questions;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [completedQuestions, setCompletedQuestions] = useState(0);
-  const [, setEvals] = useState<EvaluationHistoryEntry[]>([]);
+  const [evals, setEvals] = useState<EvaluationHistoryEntry[]>([
+    // {
+    //   answer: "Lorem ipsum dolor sit amet",
+    //   feedback: "Lorem ipsum dolor sit amet",
+    //   question: "Lorem ipsum dolor sit amet",
+    //   score: 100,
+    // },
+    // {
+    //   answer: "consectetur adipiscing elit",
+    //   feedback: "consectetur adipiscing elit",
+    //   question: "consectetur adipiscing elit",
+    //   score: 50,
+    // },
+  ]);
+  const [questionsCompleted, setQuestionsCompleted] = useState(false);
   return (
     <>
       <CatalogHeader
         title={`${catalog.grade}. Klasse ${catalog.subject}`}
-        currentStep={completedQuestions}
+        currentStep={currentQuestion + 1}
         totalSteps={questions.length}
         progress={(completedQuestions / questions.length) * 100.0}
       />
       <div className="w-full max-w-3xl mx-auto p-6 space-y-4">
-        <Question
-          question={questions[currentQuestion]}
-          onEvaluateComplete={(ev, question, answer) => {
-            setEvals((oldEvals) => [...oldEvals, { ...ev, question, answer }]);
-            setCompletedQuestions(completedQuestions + 1);
-          }}
-          hasNextQuestion={currentQuestion < questions.length - 1}
-          onNextQuestion={() => {
-            console.log("Next question");
-            setCurrentQuestion(currentQuestion + 1);
-          }}
-          onShowResults={() => {
-            console.log("Show results");
-          }}
-        />
+        {questionsCompleted ? (
+          <Results key={JSON.stringify(evals)} evals={evals} />
+        ) : (
+          <Question
+            question={questions[currentQuestion]}
+            onEvaluateComplete={(ev, question, answer) => {
+              setEvals((oldEvals) => [
+                ...oldEvals,
+                { ...ev, question, answer },
+              ]);
+              setCompletedQuestions(completedQuestions + 1);
+            }}
+            hasNextQuestion={currentQuestion < questions.length - 1}
+            onNextQuestion={() => {
+              console.log("Next question");
+              setCurrentQuestion(currentQuestion + 1);
+            }}
+            onShowResults={() => {
+              setQuestionsCompleted(true);
+            }}
+          />
+        )}
       </div>
     </>
   );
