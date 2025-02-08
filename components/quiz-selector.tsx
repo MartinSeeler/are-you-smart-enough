@@ -86,8 +86,8 @@ export default function QuizSelector({
       </CardHeader>
       <CardContent>
         <p>
-          Du hast den Eignungstest "{selectedGrade}. Klasse {selectedSubject}"
-          ausgewählt.
+          Du hast den Eignungstest &quot;{selectedGrade}. Klasse{" "}
+          {selectedSubject}&quot; ausgewählt.
         </p>
       </CardContent>
     </Card>
