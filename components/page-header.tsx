@@ -14,7 +14,7 @@ export async function PageHeader() {
       </Link>
       {isUserAuthenticated ? (
         <div className="flex items-center gap-4">
-          <span>Hallo, {user?.given_name}</span>
+          <span>Hey, {user?.given_name}</span>
           <Button asChild>
             <LogoutLink>Abmelden</LogoutLink>
           </Button>

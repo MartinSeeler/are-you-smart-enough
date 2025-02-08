@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import CatalogHeader from "@/components/catalog-header";
 import Question from "@/components/question";
 import { EvaluationHistoryEntry, QuestionCatalog } from "@/lib/types";
 import Results from "@/components/results";
+import { LoginLink, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { Button } from "@/components/ui/button";
+import QuizSelector, { GradeSubjectTuple } from "@/components/quiz-selector";
 
 const questionCatalogs: QuestionCatalog[] = [
   {
@@ -82,9 +85,8 @@ const questionCatalogs: QuestionCatalog[] = [
 ];
 
 export default function Page() {
-  const [selectedCatalog] = useState(1);
-  const catalog = questionCatalogs[selectedCatalog];
-  const questions = catalog.questions;
+  const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const [catalog, setCatalog] = useState<QuestionCatalog | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [completedQuestions, setCompletedQuestions] = useState(0);
   const [evals, setEvals] = useState<EvaluationHistoryEntry[]>([
@@ -103,37 +105,73 @@ export default function Page() {
   ]);
   const [questionsCompleted, setQuestionsCompleted] = useState(false);
   return (
-    <>
-      <CatalogHeader
-        title={`${catalog.grade}. Klasse ${catalog.subject}`}
-        currentStep={currentQuestion + 1}
-        totalSteps={questions.length}
-        progress={(completedQuestions / questions.length) * 100.0}
-      />
-      <div className="w-full max-w-3xl mx-auto p-6 space-y-4">
-        {questionsCompleted ? (
-          <Results key={JSON.stringify(evals)} evals={evals} />
+    <div className="w-full max-w-3xl mx-auto p-6 space-y-4">
+      {isAuthenticated ? (
+        catalog ? (
+          <>
+            <CatalogHeader
+              title={`${catalog.grade}. Klasse ${catalog.subject}`}
+              currentStep={currentQuestion + 1}
+              totalSteps={catalog.questions.length}
+              progress={(completedQuestions / catalog.questions.length) * 100.0}
+            />
+            {questionsCompleted ? (
+              <Results key={JSON.stringify(evals)} evals={evals} />
+            ) : (
+              <Question
+                question={catalog.questions[currentQuestion]}
+                onEvaluateComplete={(ev, question, answer) => {
+                  setEvals((oldEvals) => [
+                    ...oldEvals,
+                    { ...ev, question, answer },
+                  ]);
+                  setCompletedQuestions(completedQuestions + 1);
+                }}
+                hasNextQuestion={currentQuestion < catalog.questions.length - 1}
+                onNextQuestion={() => {
+                  console.log("Next question");
+                  setCurrentQuestion(currentQuestion + 1);
+                }}
+                onShowResults={() => {
+                  setQuestionsCompleted(true);
+                }}
+              />
+            )}
+          </>
         ) : (
-          <Question
-            question={questions[currentQuestion]}
-            onEvaluateComplete={(ev, question, answer) => {
-              setEvals((oldEvals) => [
-                ...oldEvals,
-                { ...ev, question, answer },
-              ]);
-              setCompletedQuestions(completedQuestions + 1);
-            }}
-            hasNextQuestion={currentQuestion < questions.length - 1}
-            onNextQuestion={() => {
-              console.log("Next question");
-              setCurrentQuestion(currentQuestion + 1);
-            }}
-            onShowResults={() => {
-              setQuestionsCompleted(true);
+          <QuizSelector
+            quizes={questionCatalogs.map(
+              (q) =>
+                ({
+                  grade: q.grade,
+                  subject: q.subject,
+                } as GradeSubjectTuple)
+            )}
+            onStartQuiz={(grade, subject) => {
+              const catalog = questionCatalogs.find(
+                (q) => q.grade === grade && q.subject === subject
+              );
+              if (catalog) {
+                setCatalog(catalog);
+                setCurrentQuestion(0);
+                setCompletedQuestions(0);
+                setEvals([]);
+                setQuestionsCompleted(false);
+              }
             }}
           />
-        )}
-      </div>
-    </>
+        )
+      ) : (
+        <div className="w-full max-w-3xl mx-auto p-6 space-y-4">
+          <h1 className="text-2xl font-bold">Bitte logge dich ein</h1>
+          <p className="text-lg font-medium text-gray-600">
+            Logge dich ein, um deine Auswertung zu starten.
+          </p>
+          <Button asChild disabled={isLoading ?? false}>
+            <LoginLink>Anmelden</LoginLink>
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

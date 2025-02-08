@@ -15,7 +15,7 @@ const CatalogHeader: React.FC<StylishHeaderProps> = ({
   progress,
 }) => {
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 space-y-4">
+    <>
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-bold text-primary">{title}</h2>
         <span className="text-sm font-medium text-muted-foreground">
@@ -23,7 +23,7 @@ const CatalogHeader: React.FC<StylishHeaderProps> = ({
         </span>
       </div>
       <Progress value={progress} className="w-full h-2" />
-    </div>
+    </>
   );
 };
 
