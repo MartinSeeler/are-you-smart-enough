@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import CatalogHeader from "@/components/catalog-header";
 import Question from "@/components/question";
 import { EvaluationHistoryEntry, QuestionCatalog } from "@/lib/types";
