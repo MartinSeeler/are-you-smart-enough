@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   completedQuestionsAtom,
   currentQuestionIndexAtom,
+  quizCompletedAtom,
   userEvalsAtom,
   userNameAtom,
 } from "@/lib/atoms";
@@ -21,11 +22,13 @@ export default function QuizSelector() {
   const setCurrentQuestion = useSetAtom(currentQuestionIndexAtom);
   const setCompletedQuestions = useSetAtom(completedQuestionsAtom);
   const setUserEvals = useSetAtom(userEvalsAtom);
+  const setQuizCompleted = useSetAtom(quizCompletedAtom);
 
   const onSelectQuiz = () => {
     setCurrentQuestion(0);
     setCompletedQuestions(0);
     setUserEvals([]);
+    setQuizCompleted(false);
   };
 
   return (
