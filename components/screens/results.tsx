@@ -8,6 +8,8 @@ import ScoreChart from "../score-chart";
 import { useAtomValue } from "jotai";
 import { selectedQuizAtom, userEvalsAtom } from "@/lib/atoms";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 const Results = () => {
   const evals = useAtomValue(userEvalsAtom);
@@ -127,6 +129,11 @@ const Results = () => {
           </Card>
         ))}
       </div>
+      <Link href="/">
+        <Button variant="default" className="w-full">
+          Neuen Test starten
+        </Button>
+      </Link>
     </div>
   );
 };
