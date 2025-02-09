@@ -6,7 +6,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect } from "react";
 import QuizProgressHeader from "../quiz-progress-header";
 import Question from "../question";
-import Results from "../results";
+import Results from "./results";
 
 type QuestionProps = {
   catalog: QuestionCatalog;

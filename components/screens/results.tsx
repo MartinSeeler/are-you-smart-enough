@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { finalEvaluationSchema } from "@/app/api/final/schema";
 import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "./ui/separator";
-import ScoreChart from "./score-chart";
+import { Separator } from "../ui/separator";
+import ScoreChart from "../score-chart";
 import { useAtomValue } from "jotai";
-import { userEvalsAtom } from "@/lib/atoms";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { selectedQuizAtom, userEvalsAtom } from "@/lib/atoms";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 const Results = () => {
   const evals = useAtomValue(userEvalsAtom);
@@ -31,19 +31,17 @@ const Results = () => {
     },
   });
 
+  const quiz = useAtomValue(selectedQuizAtom);
+
   useEffect(() => {
     if (isGenerating || isDone || hasSubmitted.current) {
       return;
     }
-    console.log("calling submit");
-    submit({ evals });
+    submit({ evals, grade: quiz?.grade, subject: quiz?.subject });
     setIsGenerating(true);
     hasSubmitted.current = true;
   }, [isGenerating, submit, isDone, evals]);
 
-  //   useEffect(() => {
-  //     console.log("calling submit");
-  //   }, [evals]);
   return (
     <div className="space-y-6">
       <Card>
