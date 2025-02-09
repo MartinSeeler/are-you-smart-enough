@@ -34,7 +34,9 @@ export default function QuizSelector() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Wähle deinen Leistungstest, {userName}</CardTitle>
+        <CardTitle>
+          Wähle deinen Leistungstest{userName && `, ${userName}`}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {subjects.map((subject) => (

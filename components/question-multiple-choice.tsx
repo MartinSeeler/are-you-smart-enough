@@ -2,15 +2,19 @@
 
 import { experimental_useObject as useObject } from "ai/react";
 import { evaluationSchema } from "@/app/api/eval/schema";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import QuestionFooter from "./question-footer";
 import ScoreChart from "./score-chart";
 import { Separator } from "./ui/separator";
 import { MultipleChoiceQuestion } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { completedQuestionsAtom, userEvalsAtom } from "@/lib/atoms";
-import { useSetAtom } from "jotai";
+import {
+  completedQuestionsAtom,
+  selectedQuizAtom,
+  userEvalsAtom,
+} from "@/lib/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
 
 export type QuestionMultipleChoiceProps = {
   question: MultipleChoiceQuestion;
@@ -25,6 +29,23 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const setCompleted = useSetAtom(completedQuestionsAtom);
   const setEvals = useSetAtom(userEvalsAtom);
+
+  const onSaveEval = useCallback(
+    (score: number, feedback: string) =>
+      setEvals((prev) => [
+        ...prev,
+        {
+          question,
+          answer: selectedOption,
+          score,
+          feedback,
+        },
+      ]),
+    [question, selectedOption, setEvals]
+  );
+
+  const quiz = useAtomValue(selectedQuizAtom);
+
   const { object, submit } = useObject({
     api: "/api/eval",
     schema: evaluationSchema,
@@ -35,17 +56,35 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
     onFinish: (object) => {
       setCompleted((prev) => prev + 1);
       setIsEvaluating(false);
-      setEvals((prev) => [
-        ...prev,
-        {
-          question,
-          answer: selectedOption,
-          score: object.object?.score ?? 0,
-          feedback: object.object?.feedback ?? "",
-        },
-      ]);
+      onSaveEval(object.object?.score ?? 0, object.object?.feedback ?? "");
     },
   });
+
+  useEffect(() => {
+    if (selectedOption !== "" && !isEvaluating && !isSubmitted) {
+      setIsEvaluating(true);
+      setIsSubmitted(true);
+      submit({
+        question: {
+          ...question,
+          question: combiendQuestion,
+        },
+        answer: selectedOption,
+        subject: quiz?.subject,
+        grade: quiz?.grade,
+      });
+    }
+  }, [
+    submit,
+    question,
+    combiendQuestion,
+    selectedOption,
+    question.referenceAnswer,
+    isEvaluating,
+    isSubmitted,
+    quiz,
+  ]);
+
   return (
     <>
       <main>
@@ -60,16 +99,7 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
                 variant={option === selectedOption ? "default" : "outline"}
                 className="w-full"
                 disabled={isSubmitted || isEvaluating}
-                onClick={() => {
-                  setSelectedOption(option);
-                  setIsEvaluating(true);
-                  setIsSubmitted(true);
-                  submit({
-                    question: combiendQuestion,
-                    answer: option,
-                    referenceAnswer: question.referenceAnswer,
-                  });
-                }}
+                onClick={() => setSelectedOption(option)}
               >
                 {option}
               </Button>

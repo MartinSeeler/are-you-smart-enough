@@ -9,8 +9,12 @@ import ScoreChart from "./score-chart";
 import { Separator } from "./ui/separator";
 import { TextQuestion } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { completedQuestionsAtom, userEvalsAtom } from "@/lib/atoms";
-import { useSetAtom } from "jotai";
+import {
+  completedQuestionsAtom,
+  selectedQuizAtom,
+  userEvalsAtom,
+} from "@/lib/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
 
 export type QuestionTextProps = {
   question: TextQuestion;
@@ -22,6 +26,7 @@ const QuestionText = ({ question }: QuestionTextProps) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const setCompleted = useSetAtom(completedQuestionsAtom);
   const setEvals = useSetAtom(userEvalsAtom);
+  const quiz = useAtomValue(selectedQuizAtom);
   const { object, submit } = useObject({
     api: "/api/eval",
     schema: evaluationSchema,
@@ -83,9 +88,10 @@ const QuestionText = ({ question }: QuestionTextProps) => {
           setIsEvaluating(true);
           setIsSubmitted(true);
           submit({
-            question: question.question,
+            question,
             answer: text,
-            referenceAnswer: question.referenceAnswer,
+            subject: quiz?.subject,
+            grade: quiz?.grade,
           });
         }}
       />

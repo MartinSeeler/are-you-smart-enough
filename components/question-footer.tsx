@@ -24,9 +24,9 @@ const QuestionFooter = ({
   const hasNextQuestion = current + 1 < total;
   const setCompleted = useSetAtom(quizCompletedAtom);
   return (
-    <footer className="flex flex-col-reverse sm:flex-row justify-between items-center gap-2">
-      <Link href="/">
-        <Button variant="outline" className="w-full sm:w-auto">
+    <footer className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+      <Link href="/" className="w-full">
+        <Button variant="secondary" className="w-full sm:w-auto">
           Test abbrechen
         </Button>
       </Link>

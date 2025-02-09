@@ -31,15 +31,22 @@ export async function POST(req: Request) {
         userId: user.id,
         sessionId: hashJti(tokenData?.jti ?? ""),
         langfusePrompt: fetchedPrompt.toJSON(),
+        tags: [
+          context.question.topic,
+          `${context.grade}. Klasse`,
+          context.subject,
+        ],
       },
     },
     temperature: 0,
     schema: evaluationSchema,
     prompt: fetchedPrompt.compile({
       name: user.given_name ?? "Unbekannter Nutzer",
-      question: context.question,
+      question: context.question.question,
       answer: context.answer,
-      referenceAnswer: context.referenceAnswer,
+      grade: context.grade,
+      subject: context.subject,
+      referenceAnswer: context.question.referenceAnswer,
     }),
   });
 

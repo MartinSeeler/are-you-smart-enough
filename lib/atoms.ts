@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { EvaluationHistoryEntry, QuestionCatalog } from "@/lib/types";
 
-export const userNameAtom = atom<string>("Unbekannter Schüler");
+export const userNameAtom = atom<string>("");
 
 export const selectedQuizAtom = atom<QuestionCatalog | null>(null);
 
