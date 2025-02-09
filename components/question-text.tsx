@@ -71,7 +71,7 @@ const QuestionText = ({ question }: QuestionTextProps) => {
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-6 items-center">
             <ScoreChart score={object?.score ?? 0} />
-            <p className="text-sm">{object?.feedback}</p>
+            <p className="text-sm">{object?.feedback ?? "..."}</p>
           </CardContent>
           <Separator />
         </Card>

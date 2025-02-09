@@ -57,7 +57,7 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
             {question.options.map((option) => (
               <Button
                 key={"option-" + option}
-                variant="outline"
+                variant={option === selectedOption ? "default" : "outline"}
                 className="w-full"
                 disabled={isSubmitted || isEvaluating}
                 onClick={() => {
@@ -76,21 +76,6 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
             ))}
           </CardContent>
         </Card>
-        {/* <RadioGroup defaultValue="option-one">
-          {options.map((option) => (
-            <div key={option} className="flex items-center space-x-2">
-              <RadioGroupItem
-                value={option}
-                id={`option-${option}`}
-                disabled={isSubmitted}
-                checked={selectedOption === option}
-                onClick={() => setSelectedOption(option)}
-                onChange={() => setSelectedOption(option)}
-              />
-              <Label htmlFor={`option-${option}`}>{option}</Label>
-            </div>
-          ))}
-        </RadioGroup> */}
       </main>
       {isSubmitted && (
         <Card>
@@ -99,7 +84,7 @@ const QuestionMultipleChoice = ({ question }: QuestionMultipleChoiceProps) => {
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-6 items-center">
             <ScoreChart score={object?.score ?? 0} />
-            <p className="text-sm">{object?.feedback}</p>
+            <p className="text-sm">{object?.feedback ?? "..."}</p>
           </CardContent>
           <Separator />
         </Card>
