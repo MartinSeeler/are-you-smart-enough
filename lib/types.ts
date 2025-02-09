@@ -22,7 +22,7 @@ export type QuestionCatalog = {
 };
 
 export type EvaluationHistoryEntry = {
-  question: string;
+  question: Question;
   answer: string;
   score: number;
   feedback: string;

@@ -1,4 +1,3 @@
-import { EvaluationHistoryEntry } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { finalEvaluationSchema } from "@/app/api/final/schema";
@@ -6,16 +5,16 @@ import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "./ui/separator";
 import ScoreChart from "./score-chart";
-import { QuestionHeader } from "./question-header";
+import { useAtomValue } from "jotai";
+import { userEvalsAtom } from "@/lib/atoms";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 
-type ResultsProps = {
-  evals: EvaluationHistoryEntry[];
-};
-
-const Results = ({ evals }: ResultsProps) => {
+const Results = () => {
+  const evals = useAtomValue(userEvalsAtom);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isDone, setIsDone] = useState(false);
   const hasSubmitted = useRef(false);
+
+  const [isDone, setIsDone] = useState(false);
 
   const totalPoints = evals.reduce((acc, curr) => acc + curr.score, 0.0);
   const maxPoints = evals.length * 100;
@@ -47,17 +46,21 @@ const Results = ({ evals }: ResultsProps) => {
   //   }, [evals]);
   return (
     <div className="space-y-6">
-      <QuestionHeader subtitle={"Übersicht"} title={"Gesamtauswertung"} />
-      {/* <h2 className="text-2xl font-bold">Auswertung</h2> */}
-      <div className="flex flex-col sm:flex-row gap-6 items-center">
-        <ScoreChart score={(totalPoints / maxPoints) * 100} />
-        <p className="font-medium">{object?.summary}</p>
-      </div>
-      {/* <Separator /> */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <h3 className="text-lg font-bold">Stärken</h3>
-          <ul className="space-y-4 mt-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Gesamtergebnis</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row gap-6 items-center">
+          <ScoreChart score={(totalPoints / maxPoints) * 100} />
+          <p className="text-sm">{object?.summary}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Stärken</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-4">
             {(object?.strengths ?? []).map((item, index) => (
               <li key={index} className="flex items-start space-x-4">
                 <Badge
@@ -77,10 +80,14 @@ const Results = ({ evals }: ResultsProps) => {
               </li>
             ))}
           </ul>
-        </div>
-        <div>
-          <h3 className="text-lg font-bold">Schwächen</h3>
-          <ul className="space-y-4 mt-4">
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Schwächen</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-4">
             {(object?.weaknesses ?? []).map((item, index) => (
               <li key={index} className="flex items-start space-x-4">
                 <Badge variant="destructive" className="mt-1">
@@ -97,20 +104,29 @@ const Results = ({ evals }: ResultsProps) => {
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+
       <Separator />
       <div className="space-y-6">
-        <QuestionHeader subtitle={"Übersicht"} title={"Einzelbewertungen"} />
         {evals.map((ev, index) => (
-          <div key={"eval-" + index} className="flex flex-col gap-4">
-            <h4 className="text-lg font-bold">{ev.question}</h4>
-            <div className="flex flex-col sm:flex-row gap-6 items-center">
+          <Card key={"result-" + index}>
+            <CardHeader>
+              <CardTitle>{ev.question.question}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col sm:flex-row gap-6 items-center">
               <ScoreChart score={ev.score} />
-              <p>{ev.feedback}</p>
-            </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm">
+                  <span className="font-bold">Deine Antwort: </span>
+                  {ev.answer}
+                </p>
+                <Separator />
+                <p className="text-sm">{ev.feedback}</p>
+              </div>
+            </CardContent>
             <Separator />
-          </div>
+          </Card>
         ))}
       </div>
     </div>

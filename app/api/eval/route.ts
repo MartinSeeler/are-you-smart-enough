@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     temperature: 0,
     schema: evaluationSchema,
     prompt: fetchedPrompt.compile({
-      name: user.given_name ?? "Unbekannt",
+      name: user.given_name ?? "Unbekannter Nutzer",
       question: context.question,
       answer: context.answer,
       referenceAnswer: context.referenceAnswer,
