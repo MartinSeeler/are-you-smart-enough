@@ -7,7 +7,10 @@ import { ReactNode } from "react";
 
 export const Providers = ({ children }: { children: ReactNode }) => {
   return (
-    <PlausibleProvider domain="are-you-smart-enough.vercel.app">
+    <PlausibleProvider
+      domain="are-you-smart-enough.vercel.app"
+      trackOutboundLinks={true}
+    >
       <JotaiProvider>
         <KindeProvider>{children}</KindeProvider>
       </JotaiProvider>
