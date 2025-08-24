@@ -9,16 +9,14 @@ const Welcome = () => {
   return (
     <>
       <h1 className="mt-10 text-pretty text-5xl font-semibold tracking-tight text-gray-900 sm:text-6xl">
-        Willkommen beim Vorbereitungstest für die Oberstufe
+        Willkommen zum KI-Wissenscheck
       </h1>
       <p className="mt-8 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">
-        Auf dieser Website kannst du testen, wie gut du auf die 11. Klasse
-        vorbereitet bist. Der Test umfasst verschiedene Aufgaben aus
-        ausgewählten Fächern der 10. Klasse, wie Chemie, Physik, Deutsch und
-        Englisch. Mithilfe einer KI werden deine Antworten analysiert, und du
-        erhältst ein individuelles Feedback zu deinen Stärken und Schwächen.
-        Ziel ist es, dir dabei zu helfen, gezielt an deinen Fähigkeiten zu
-        arbeiten und bestens in die Oberstufe zu starten.
+Hier kannst du prüfen, wie gut du die Präsentation über Künstliche Intelligenz verstanden hast.
+
+Beantworte die Fragen so genau wie möglich. Manche Aufgaben haben mehrere richtige Antworten, bei anderen musst du frei schreiben.
+
+Viel Erfolg und zeig, dass du schon jetzt fit für die Zukunft mit KI bist.
       </p>
       <div className="mt-10 flex items-center gap-x-6">
         <Button asChild size={"lg"}>
