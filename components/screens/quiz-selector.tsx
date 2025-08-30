@@ -46,7 +46,7 @@ export default function QuizSelector() {
             className="w-full"
           >
             <Button variant="outline" className="w-full" onClick={onSelectQuiz}>
-              10. Klasse {subject}
+              10. Klasse - {subject}
             </Button>
           </Link>
         ))}

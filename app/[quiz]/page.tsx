@@ -8,8 +8,9 @@ export default async function Page({
   params: Promise<{ quiz: string }>;
 }) {
   const quiz = (await params).quiz;
+  console.log("Quiz param:", quiz);
   const catalog = questionCatalogs.find(
-    (q) => q.subject.toLowerCase() === quiz
+    (q) => encodeURIComponent(q.subject.toLowerCase()) === quiz
   );
   if (!catalog) {
     return redirect("/");
